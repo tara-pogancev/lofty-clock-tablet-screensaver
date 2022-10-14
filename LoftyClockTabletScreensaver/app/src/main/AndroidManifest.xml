@@ -25,10 +25,6 @@
             android:name=".service.BluetoothService"
             android:enabled="true"
             android:exported="true" />
-        <service
-            android:name=".service.ChargingService"
-            android:enabled="true"
-            android:exported="true"/>
 
         <activity
             android:name=".MainActivity"
