@@ -115,10 +115,6 @@ public class ForegroundService extends Service {
         if (isCharging) {
             if (lastState == AppState.NOT_CHARGING) {
                 try {
-//                    Intent intent = new Intent(this, MainActivity.class);
-//                    intent.setAction(Intent.ACTION_MAIN);
-//                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                    startActivity(intent);
                     connectToAudioDevice();
                 } catch (Exception e) {
                     e.printStackTrace();

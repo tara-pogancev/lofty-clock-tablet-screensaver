@@ -95,8 +95,13 @@ public class MainActivity extends AppCompatActivity {
 
         if (isCharging) {
             ForegroundService.connectToAudioDevice();
+
+            Intent homeIntent = new Intent(this, MainActivity.class);
+            homeIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            startActivity(homeIntent);
         } else {
             ForegroundService.disconnectFromAudioDevice();
+
             Intent startMain = new Intent(Intent.ACTION_MAIN);
             startMain.addCategory(Intent.CATEGORY_HOME);
             startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
