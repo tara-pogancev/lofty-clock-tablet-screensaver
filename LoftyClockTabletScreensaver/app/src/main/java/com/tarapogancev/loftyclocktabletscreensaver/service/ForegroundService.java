@@ -10,7 +10,6 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -18,9 +17,7 @@ import android.os.BatteryManager;
 import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
-import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
 import com.tarapogancev.loftyclocktabletscreensaver.MainActivity;
@@ -28,12 +25,11 @@ import com.tarapogancev.loftyclocktabletscreensaver.R;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-public class BluetoothService extends Service {
+public class ForegroundService extends Service {
 
     private static BluetoothAdapter mBluetoothAdapter;
     private static BluetoothSocket mSocket;
@@ -43,8 +39,10 @@ public class BluetoothService extends Service {
 
     private AppState lastState = AppState.NOT_CHARGING;
     ChargeDetection chargeDetector;
+    ScreenDetection screenDetector;
+    private static boolean isActive = false;
 
-    public BluetoothService() {
+    public ForegroundService() {
     }
 
     @Override
@@ -59,7 +57,9 @@ public class BluetoothService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        isActive = true;
         chargeDetector = new ChargeDetection();
+        screenDetector = new ScreenDetection();
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         createNotificationChannel();
 
@@ -69,6 +69,12 @@ public class BluetoothService extends Service {
         filter.addAction(Intent.ACTION_POWER_DISCONNECTED);
         this.registerReceiver(chargeDetector, filter);
         startListeningForCharging();
+
+        IntentFilter filter2 = new IntentFilter();
+        filter2.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY);
+        filter2.addAction(Intent.ACTION_SCREEN_OFF);
+        this.registerReceiver(screenDetector, filter2);
+        startListeningForScreenOff();
 
         Intent notificationIntent = new Intent(this, MainActivity.class);
         notificationIntent.setAction(Intent.ACTION_MAIN);
@@ -109,9 +115,10 @@ public class BluetoothService extends Service {
         if (isCharging) {
             if (lastState == AppState.NOT_CHARGING) {
                 try {
-                    Intent intent = new Intent(this, MainActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    //startActivity(intent);
+//                    Intent intent = new Intent(this, MainActivity.class);
+//                    intent.setAction(Intent.ACTION_MAIN);
+//                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                    startActivity(intent);
                     connectToAudioDevice();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -123,6 +130,13 @@ public class BluetoothService extends Service {
             lastState = AppState.NOT_CHARGING;
             disconnectFromAudioDevice();
         }
+    }
+
+    private void startListeningForScreenOff() {
+        Log.e("123", "Screen is off");
+        IntentFilter ifilter = new IntentFilter(Intent.ACTION_SCREEN_OFF);
+        Intent screenState = this.registerReceiver(null, ifilter);
+        Log.e("123", "Screen is off");
     }
 
     @SuppressLint("MissingPermission")
@@ -156,10 +170,21 @@ public class BluetoothService extends Service {
         }
     }
 
+    public void startMainActivity() {
+        Intent mainIntent = new Intent(this, MainActivity.class);
+        this.startActivity(mainIntent);
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
         unregisterReceiver(chargeDetector);
+        unregisterReceiver(screenDetector);
+        isActive = false;
+    }
+
+    public static boolean isActive() {
+        return isActive;
     }
 }
 
@@ -168,6 +193,15 @@ class ChargeDetection extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
         Intent batteryStatus = context.registerReceiver(null, ifilter);
+        Log.e("LOG", "Charge mode changed");
     }
 
+}
+
+class ScreenDetection extends BroadcastReceiver {
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        IntentFilter ifilter = new IntentFilter(Intent.ACTION_SCREEN_OFF);
+        Intent screenStatus = context.registerReceiver(null, ifilter);
+    }
 }
