@@ -79,7 +79,7 @@ public class ForegroundService extends Service {
         Intent notificationIntent = new Intent(this, MainActivity.class);
         notificationIntent.setAction(Intent.ACTION_MAIN);
         notificationIntent.addCategory(Intent.CATEGORY_LAUNCHER);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this,0, notificationIntent, PendingIntent.FLAG_IMMUTABLE);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE);
 
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentTitle("Lofty Clock Screensaver")
@@ -124,15 +124,13 @@ public class ForegroundService extends Service {
             lastState = AppState.CHARGING;
         } else {
             lastState = AppState.NOT_CHARGING;
-            disconnectFromAudioDevice();
+//            disconnectFromAudioDevice();
         }
     }
 
     private void startListeningForScreenOff() {
-        Log.e("123", "Screen is off");
         IntentFilter ifilter = new IntentFilter(Intent.ACTION_SCREEN_OFF);
         Intent screenState = this.registerReceiver(null, ifilter);
-        Log.e("123", "Screen is off");
     }
 
     @SuppressLint("MissingPermission")
@@ -143,7 +141,6 @@ public class ForegroundService extends Service {
             for (BluetoothDevice devices : connectedDevices) {
                 if (devices.getName().equals("Lenovo Smart Dock 7A621C")) {
                     device = devices;
-
                     try {
                         mSocket = device.createRfcommSocketToServiceRecord(DOCK_UUID);
                         mSocket.connect();
@@ -161,6 +158,7 @@ public class ForegroundService extends Service {
         try {
             mSocket.close();
             Log.e("INFO", "Disconnected");
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -191,7 +189,6 @@ class ChargeDetection extends BroadcastReceiver {
         Intent batteryStatus = context.registerReceiver(null, ifilter);
         Log.e("LOG", "Charge mode changed");
     }
-
 }
 
 class ScreenDetection extends BroadcastReceiver {

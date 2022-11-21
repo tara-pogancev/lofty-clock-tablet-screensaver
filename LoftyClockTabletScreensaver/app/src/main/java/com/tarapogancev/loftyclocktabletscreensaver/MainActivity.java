@@ -1,8 +1,5 @@
 package com.tarapogancev.loftyclocktabletscreensaver;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -16,7 +13,9 @@ import android.view.WindowManager;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.tarapogancev.loftyclocktabletscreensaver.service.AppState;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+
 import com.tarapogancev.loftyclocktabletscreensaver.service.ForegroundService;
 
 import java.text.SimpleDateFormat;
@@ -71,6 +70,8 @@ public class MainActivity extends AppCompatActivity {
         layoutMain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                ForegroundService.disconnectFromAudioDevice();
+
                 Intent startMain = new Intent(Intent.ACTION_MAIN);
                 startMain.addCategory(Intent.CATEGORY_HOME);
                 startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -99,15 +100,16 @@ public class MainActivity extends AppCompatActivity {
             Intent homeIntent = new Intent(this, MainActivity.class);
             homeIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             startActivity(homeIntent);
-        } else {
-            ForegroundService.disconnectFromAudioDevice();
-
-            Intent startMain = new Intent(Intent.ACTION_MAIN);
-            startMain.addCategory(Intent.CATEGORY_HOME);
-            startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(startMain);
-
-        }
+       }
+//        else {
+//            ForegroundService.disconnectFromAudioDevice();
+//
+//            Intent startMain = new Intent(Intent.ACTION_MAIN);
+//            startMain.addCategory(Intent.CATEGORY_HOME);
+//            startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//            startActivity(startMain);
+//
+//        }
     }
 
 }
