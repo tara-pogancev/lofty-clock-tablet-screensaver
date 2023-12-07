@@ -1,4 +1,6 @@
 # Lofty Clock Tablet Screensaver
+![Android Studio](https://img.shields.io/badge/Android%20Studio-3DDC84.svg?style=for-the-badge&logo=android-studio&logoColor=white)
+![MUI](https://img.shields.io/badge/MUI-%230081CB.svg?style=for-the-badge&logo=mui&logoColor=white)
 
 ## A stimple, modern clock screensaver developed in Android Studio
 
